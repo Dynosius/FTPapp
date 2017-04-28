@@ -9,11 +9,11 @@ public class Properties
     private String userID;
     private String password;
 
-    public Properties ()
+    public Properties (String user, String pass)
     {
         this.serverAddress = "127.0.0.1";
-        this.userID = "Dino";
-        this.password = "Kralj";
+        this.userID = user;
+        this.password = pass;
     }
 
 

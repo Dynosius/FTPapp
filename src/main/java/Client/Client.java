@@ -1,6 +1,7 @@
+//TODO: ponovo napraviti login exception handling -> nullpointerexception u slucaju fail logina
+
 package Client;
 import org.apache.commons.net.ftp.*;
-
 import java.io.*;
 import java.util.HashMap;
 
@@ -10,17 +11,20 @@ import java.util.HashMap;
  */
 public class Client extends Properties
 {
-    FTPClient ftp = new FTPClient();
-    private final static int bsize = 1024;
+    private FTPClient ftp = new FTPClient();
+    private final static int bsize = 2048;
     private double speed;
-    HashMap hm = new HashMap<String, Double>();
+    private HashMap hm;
 
 
-    protected Client()
+    public Client(String user, String pass)
     {
-        super();
+        super(user, pass);
+        ConnectToService();
+        login(user, pass);
     }
-    protected void ConnectToService()
+
+    private void ConnectToService()
     {
         try
         {
@@ -70,15 +74,13 @@ public class Client extends Properties
         }
     }
 
-    public String[] Listfiles(){
+    protected String[] Listfiles(){
         try {
-            if(hm.isEmpty())
-            {
+                hm = new HashMap();
                 for (FTPFile ftpFile : ftp.listFiles())
                 {
                     hm.put(ftpFile.getName(), (double)ftpFile.getSize());
                 }
-            }
             return ftp.listNames();
 
         } catch (IOException e) {
@@ -99,45 +101,44 @@ public class Client extends Properties
             byte[] data = new byte[bsize];
             long startTime, endTime, downloaded = 0;
             double time, fileSize = (double) hm.get(fileName);
-            try
-            {
+            try {
                 outputStream = new FileOutputStream("C:\\Users\\dkralj\\Desktop\\downloads\\" + fileName);
             } catch (FileNotFoundException e) {
                 System.err.println("Output stream error");
                 e.printStackTrace();
             }
-            try
-            {
+            try {
                 InputStream ftpStream = ftp.retrieveFileStream(fileName);
                 buffIn = new BufferedInputStream(ftpStream, bsize);
                 //petlja za write/DL speed kalkulaciju
                 startTime = System.currentTimeMillis();
-                while(true)
-                {
-                    if(buffIn.read(data) != -1)
-                    {
+                while (true) {
+                    if (buffIn.read(data) != -1 && data != null) {
+                        //TODO: veliki problem, filovi imaju veci size nego prije
+                        //Ima veze s velicinom data-e (bsize), ako stavim bsize = 2, ispadne sve ok, sa 1024+ fileovi su veci od originala
                         outputStream.write(data);
                         downloaded += data.length;
-                        progressBar.setPBValue((int)(downloaded/fileSize*100));
+                        progressBar.setPBValue((int) (downloaded / fileSize * 100));
                         progressBar.refresh();
-                    }
-                    else
-                        {
+                    } else {
                         break;
                     }
                 }
                 endTime = System.currentTimeMillis();
                 //Bitno!
-                buffIn.close();
                 ftpStream.close();
                 ftp.completePendingCommand();
-                //
+                buffIn.close();
+                if (outputStream != null)
+                {
+                    outputStream.close();
+                }
+                ////////////////////////////
 
                 fileSize /= 1024f;
-                time = (endTime - startTime)/1000f;  //time in seconds
-                System.out.println(fileSize + " time: " + time);
+                time = (endTime - startTime) / 1000f;  //time in seconds
                 if (time == 0) time = 1;
-                this.speed = fileSize/time;
+                this.speed = fileSize / time;
                 System.out.printf("Speed is %.2f KBps\n", this.speed);
 
             } catch (IOException e) {
@@ -147,25 +148,11 @@ public class Client extends Properties
         }).start();
     }
 
-    //Redundant as of yet, disconnects after exiting app automatically
-    public void Disconnect ()
-    {
-        try {
-            ftp.disconnect();
-            System.out.println("Succesfully disconnected.");
-        } catch (IOException e) {
-            System.err.println ("Failed to disconnect");
-            e.printStackTrace();
-        }
-    }
     protected boolean login(String name, String pass)
     {
         boolean loginStatus = false;
-        setPassword(pass);
-        setUserID(name);
         try {
             loginStatus = ftp.login(name, pass);
-
         } catch (IOException e) {
             System.err.println("Failed to authorize!!");
             System.out.println(ftp.getReplyString());
@@ -173,7 +160,7 @@ public class Client extends Properties
         }
         return loginStatus;
     }
-
+}
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      OLD VERSION!!
 
@@ -220,4 +207,19 @@ public class Client extends Properties
             }
         }).start();
     }*/
-}
+
+    /*
+         //Redundant as of yet, disconnects after exiting app automatically
+         public void Disconnect ()
+        {
+            try {
+                ftp.disconnect();
+                System.out.println("Succesfully disconnected.");
+            } catch (IOException e) {
+                System.err.println ("Failed to disconnect");
+                e.printStackTrace();
+            }
+        }
+
+        */
+

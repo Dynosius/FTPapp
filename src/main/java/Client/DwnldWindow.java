@@ -12,6 +12,7 @@ public class DwnldWindow{
     public DwnldWindow()
     {
         theFrame = new JFrame("Downloading");
+        theFrame.setResizable(false);
         //theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         progressBar.setValue(0);
         progressBar.setMaximum(100);

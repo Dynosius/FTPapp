@@ -9,37 +9,28 @@ import java.awt.event.*;
  * Created by dkralj on 20.4.2017.
  */
 public class SwingGUI extends JFrame implements ActionListener, ListSelectionListener {
-    private Client clientInstance = new Client();
     private JButton uploadBTN, downloadBTN;
     private JLabel statusText;
     private JFileChooser jfc;
-    private JList lista;
+    private JList<String> lista;
     private String fileName;
-    private String[] names;
+    private String username, password;
 
 
-    public SwingGUI ()
+    public SwingGUI ()  //Initialize Login pop up windows
     {
         super("DinoZilla FTP client");
-        clientInstance.ConnectToService();
-        String user = JOptionPane.showInputDialog("Enter user:");
+        //clientInstance.ConnectToService();
+        this.username = JOptionPane.showInputDialog("Enter user:");
         JPasswordField pass = new JPasswordField();
         JOptionPane.showConfirmDialog(null, pass,"Options", JOptionPane.OK_CANCEL_OPTION);
         char[] arr = pass.getPassword();
-        if(clientInstance.login(user, String.valueOf(arr)))
-        {
-            //initialize window
-            init();
-        }
-        else
-        {
-            //exit program
-            JOptionPane.showMessageDialog(null, "Server refused connection: Bad login");
-            System.exit(1);
-        }
+        this.password = String.valueOf(arr);
+
+        init();
     }
 
-    private void init()
+    private void init()     //Initialize Swing GUI
     {
         //Window properties
         setSize (400, 200);
@@ -71,16 +62,18 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
         Object obj = e.getSource();
         if (obj == uploadBTN)
         {
+            Client clientInstance = new Client(username, password);
             jfc.showOpenDialog(this);
             clientInstance.UploadFile(jfc.getSelectedFile().getAbsolutePath());
             statusText.setText("Uploaded file");
         }
         else if (obj == downloadBTN)
         {
-            this.names = clientInstance.Listfiles();
+            Client clientInstance = new Client(username, password);
+            String[] names = clientInstance.Listfiles();;
             if (this.lista == null)
             {
-                this.lista = new JList(names);
+                this.lista = new JList<>(names);
                 lista.addListSelectionListener(this);
             }
 
@@ -104,7 +97,7 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
     {
         if (!a.getValueIsAdjusting())
         {
-            this.fileName = lista.getSelectedValue().toString();
+            this.fileName = lista.getSelectedValue();
         }
     }
 }
