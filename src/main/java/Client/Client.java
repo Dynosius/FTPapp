@@ -101,6 +101,7 @@ public class Client extends Properties
             byte[] data = new byte[bsize];
             long startTime, endTime, downloaded = 0;
             double time, fileSize = (double) hm.get(fileName);
+            int count = 0;
             try {
                 outputStream = new FileOutputStream("C:\\Users\\dkralj\\Desktop\\downloads\\" + fileName);
             } catch (FileNotFoundException e) {
@@ -113,10 +114,10 @@ public class Client extends Properties
                 //petlja za write/DL speed kalkulaciju
                 startTime = System.currentTimeMillis();
                 while (true) {
-                    if (buffIn.read(data) != -1 && data != null) {
+                    if ((count = buffIn.read(data)) != -1 && data != null) {
                         //TODO: veliki problem, filovi imaju veci size nego prije
                         //Ima veze s velicinom data-e (bsize), ako stavim bsize = 2, ispadne sve ok, sa 1024+ fileovi su veci od originala
-                        outputStream.write(data);
+                        outputStream.write(data, 0, count);
                         downloaded += data.length;
                         progressBar.setPBValue((int) (downloaded / fileSize * 100));
                         progressBar.refresh();
