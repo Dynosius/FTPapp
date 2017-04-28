@@ -1,10 +1,8 @@
 package Client;
 import org.apache.commons.net.ftp.*;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 
 /**
