@@ -25,17 +25,7 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
         char[] arr = pass.getPassword();
         this.password = String.valueOf(arr);
         //instanciranje objekta samo za login, losa optimizacija jer ne trebam taj objekt nizasto osim za login checkup
-        Client login = new Client(username, password, server);
-        if(login.login(username, password))
-        {
-            init();
-            login = null;
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(this, "Login failed");
-            System.exit(-1);
-        }
+        checkLogin();
     }
 
     private void init()     //Initialize Swing GUI
@@ -71,6 +61,7 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
     public void actionPerformed(ActionEvent e)
     {
         Object obj = e.getSource();
+        //Upload
         if (obj == uploadBTN)
         {
             Client clientInstance = new Client(username, password, server);
@@ -78,6 +69,7 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
             clientInstance.UploadFile(jfc.getSelectedFile().getAbsolutePath());
             statusText.setText("Uploaded file");
         }
+        //Download
         else if (obj == downloadBTN)
         {
             Client clientInstance = new Client(username, password, server);
@@ -100,6 +92,7 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
                 statusText.setText("Cancelled");
             }
         }
+        //Change Server
         else if (obj == changeSRV)
         {
             this.server = JOptionPane.showInputDialog("Enter server address:");
@@ -111,6 +104,21 @@ public class SwingGUI extends JFrame implements ActionListener, ListSelectionLis
         if (!a.getValueIsAdjusting())
         {
             this.fileName = lista.getSelectedValue();
+        }
+    }
+
+    public void checkLogin()
+    {
+        Client login = new Client(username, password, server);
+        if(login.login(username, password))
+        {
+            init();
+            login.Disconnect();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Login failed");
+            System.exit(-1);
         }
     }
 }

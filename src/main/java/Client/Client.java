@@ -55,6 +55,15 @@ public class Client extends Properties implements ClientInterface
         }
     }
 
+    public void Disconnect()
+    {
+        try {
+            ftp.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void UploadFile(String filePath)
     {
         try
@@ -74,6 +83,7 @@ public class Client extends Properties implements ClientInterface
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Disconnect();
     }
 
     public String[] Listfiles(){
@@ -150,6 +160,7 @@ public class Client extends Properties implements ClientInterface
                 System.err.println("Input stream failed to open");
                 e.printStackTrace();
             }
+            Disconnect();
         }).start();
     }
 
