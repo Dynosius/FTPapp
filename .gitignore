@@ -1,0 +1,7 @@
+.idea/*
+FTPapp/*
+target/generated-sources/
+target/generated-test-sources/
+target/test-classes/
+*.iml
+src/test/*

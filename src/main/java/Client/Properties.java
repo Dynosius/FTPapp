@@ -8,15 +8,12 @@ public class Properties
     private String serverAddress;
     private String userID;
     private String password;
-
-    public Properties (String user, String pass)
+    public Properties (String user, String pass, String server)
     {
-        this.serverAddress = "127.0.0.1";
+        this.serverAddress = server;
         this.userID = user;
         this.password = pass;
     }
-
-
     public String getServerAddress ()
     {
         return this.serverAddress;
@@ -37,6 +34,4 @@ public class Properties
     {
         this.password = password;
     }
-    public void setServerAddress (String Address) { this.serverAddress = Address; }
-
 }
